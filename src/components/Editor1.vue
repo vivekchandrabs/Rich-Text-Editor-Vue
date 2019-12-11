@@ -1,0 +1,190 @@
+<template>
+    <div class="editor_body container"> 
+            <transition-group name="list" 
+                              tag="p"
+                              v-if="loading">
+
+              <!-- Main Editor Area -->
+              <div v-for="item in Items"
+                    :key="item.id" 
+                    class="list-item">
+                  <!-- Div todo drop the HTML elements -->
+                  <div 
+                  :class="hover ? 'slot-active ' : 'slot'" v-on:drop="on_drop($event, item.id, 0)" 
+                        v-on:dragover="allowDrop($event)">               
+                  </div>
+
+                  <!-- Text Area Element -->
+                  <TextArea v-if="item.element_id==1" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+
+                  <!-- Heading 1, 2, 3 -->
+                  <Heading_1 v-if="item.element_id==2" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <Heading_2 v-if="item.element_id==3" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <Heading_3 v-if="item.element_id==4" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+
+                  <!-- Quote -->
+                  <Quote v-if="item.element_id==5" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+
+                  <!-- Horizontail line -->
+                  <Divider v-if="item.element_id==6" v-bind:item_id="item.id" />
+
+                  <!-- Lists -->
+                  <UnOrderedList v-if="item.element_id==7" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <OrderedList v-if="item.element_id==8" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  
+                  <!-- Todo Lists -->
+                  <TodoList v-if="item.element_id==9" 
+                    v-bind:item_id="item.id"
+                    v-bind:item_info="item.info"
+                    v-bind:checked="item.info.checked"/>
+
+                  <!-- Embed Video and Image -->
+                  <EmbedVideo v-if="item.element_id==10" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <EmbedImage v-if="item.element_id == 11" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  
+                  <!-- Store BookMarks -->
+                  <BookMark v-if="item.element_id == 12" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  
+                  <!-- Table -->
+                  <Table v-if="item.element_id == 13" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                
+              </div>
+            </transition-group>
+        <br><br><br><br><br><br>
+    </div>
+</template>
+
+<script>
+import Vue from "vue";
+
+import store from "../stores"
+import { mapActions, mapGetters } from "vuex";
+
+import Heading_1 from "./EditorComponents/Heading_1"
+import Heading_2 from "./EditorComponents/Heading_2"
+import Heading_3 from "./EditorComponents/Heading_3"
+import TextArea from "./EditorComponents/TextArea"
+import Quote from "./EditorComponents/Quote"
+import Divider from "./EditorComponents/Divider"
+import UnOrderedList from "./EditorComponents/UnOrderedList"
+import OrderedList from "./EditorComponents/OrderedList"
+import TodoList from "./EditorComponents/TodoList"
+import EmbedVideo from "./EditorComponents/EmbedVideo"
+import EmbedImage from "./EditorComponents/EmbedImage"
+import BookMark from "./EditorComponents/BookMark"
+import Table from "./EditorComponents/Table"
+
+export default {
+  name: "Editor1",
+  computed: mapGetters(["Items", "hover"]),
+  components: {
+    Heading_1,
+    Heading_2,
+    Heading_3,
+    TextArea,
+    Quote,
+    Divider,
+    UnOrderedList,
+    OrderedList,
+    TodoList,
+    EmbedVideo,
+    EmbedImage,
+    BookMark,
+    Table
+  },
+  data() {
+    return {
+      loading: false
+    };
+  },
+
+  methods: {
+
+    // Gets triggered when the Editor component is in the allow drop area.
+    allowDrop(event) {
+      this.$store.commit("commit_hover", true)
+      this.$store.dispatch("allowDrop",event)
+    },
+
+    // Gets triggered when the Editor Element in droped in the drop area.
+    on_drop(event, item_id, place_id) {
+      let json_data ={}
+      json_data["item_id"] = item_id
+      json_data["place_id"] = place_id
+
+      this.$store.dispatch("on_drop", json_data).then(
+        this.$store.dispatch("reorder")
+      )
+
+      this.$store.commit("commit_hover", false)
+
+    },
+  },
+  created() {
+    // this.$store.dispatch("getAllItems")
+    // .then(res => {
+    //   console.log(res.data)
+    //   this.$store.commit("commit_Items", res.data.editor_info),
+      this.loading = true
+    // })
+  }
+};
+</script>
+
+<style scoped>
+.editor_body {
+  cursor: auto;
+  border-color: rgb(190, 112, 16);
+  border-style: solid;
+  height: 100%;
+}
+
+.list-item {
+  margin-right: 10px;
+  margin: 10px; 
+}
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.slot {
+  min-height: 10px;
+  min-width: 100%;
+}
+
+.slot-active {
+  min-height: 10px;
+  background: #eee;
+  min-width: 100%;
+}
+
+.block {
+  width: 100%;
+  border: none;
+}
+
+.block:focus {
+  border: none;
+  outline: none;
+  background: #eee;
+}
+
+.block:hover {
+  cursor: pointer;
+}
+
+.drag-button {
+  border-radius: 40%;
+}
+
+div:empty:before {
+  content:attr(data-placeholder);
+  color:gray
+}
+
+</style>
