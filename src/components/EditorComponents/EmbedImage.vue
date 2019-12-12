@@ -1,13 +1,14 @@
 <template>
-    <div>
+    <div style="display: flex; justify-content:flex-startl align-items:center;"
+        @mouseover="displayDragger=1" @mouseout="displayDragger=0">
         
+        <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
         <!-- Display Image -->
         <div class="resize-image" v-if="item_info">
 
             <img :src="image_link" alt="item_info" style="max-width:100%" 
             v-if="item_info"  
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)" 
             class="list-item">
 
         </div>
@@ -17,9 +18,7 @@
             <button type="button" 
                     class="btn btn-primary list-item"
                     data-toggle="modal"
-                    data-target="#imagemodel"
-                    draggable="true"
-                    v-on:dragstart="onDragStart($event, item_id)">
+                    data-target="#imagemodel">
                     Embed Image
             </button>
             
@@ -57,60 +56,61 @@
 </template>
 
 <script>
-import store from "../../stores"
+import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "Image",
-  props:["item_id", "item_info"],
-
-  data(){
-      return {
-          image_link:this.item_info
-      }
+  props: ["item_id", "item_info"],
+  components: {
+    DraggerButton
+  },
+  data() {
+    return {
+      image_link: this.item_info,
+      displayDragger: 0
+    };
   },
 
   methods: {
-      
     //   Gets triggered when the draggable element is dragged
     onDragStart(event, item_id) {
-         this.$store.dispatch("onDragStart", item_id);
-
+      this.$store.dispatch("onDragStart", item_id);
     },
 
     // Gets triggered when the save button is clicked
     store_item_info(item_id) {
       let json_data = {};
       json_data["item_id"] = item_id;
-      json_data["info"] = this.image_link
+      json_data["info"] = this.image_link;
 
       this.$store.dispatch("on_info_change", json_data);
-    }   
+    }
   }
 };
-
 </script>
 
 <style scoped>
-    p{
-        border-left: 2px solid black;
-    }
-    .resize-image{
-        border: 2px solid;      
-        resize: both;
-        overflow: hidden;
-        height: auto;
+p {
+  border-left: 2px solid black;
+}
+.resize-image {
+  border: 2px solid;
+  resize: both;
+  overflow: hidden;
+  height: auto;
 
-        /* overflow-x: none;
+  /* overflow-x: none;
         overflow-y: none;
         overflow: hidden; */
-        object-fit: cover;
-    }
-    .resize-image img{
-        position: relative;
-        height: auto;
-        max-width: 100%;
-                max-height: 100%;
-
-    }
+  object-fit: cover;
+}
+.resize-image img {
+  position: relative;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
 </style>
 

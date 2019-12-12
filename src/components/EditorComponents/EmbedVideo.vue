@@ -1,11 +1,10 @@
 <template>
-    <div>
-
+    <div style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+      <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
        <!-- Embeded video will be displayed here -->
         <div    
-            v-if="item_info"  
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)"  
+            v-if="item_info"   
             v-html="iframe_link">
         </div>
         
@@ -15,9 +14,7 @@
             <button type="button" 
                     class="btn btn-primary list-item"
                     data-toggle="modal"
-                    data-target="#exampleModal"
-                    draggable="true"
-                    v-on:dragstart="onDragStart($event, item_id)">
+                    data-target="#exampleModal">
                     Embed Video
             </button>
 
@@ -55,40 +52,44 @@
 </template>
 
 <script>
-import store from "../../stores"
+import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "EmbedVideo",
-  props:["item_id", "item_info"],
-
-  data(){
-      return {
-          iframe_link:this.item_info
-      }
+  props: ["item_id", "item_info"],
+  components: {
+    DraggerButton
+  },
+  data() {
+    return {
+      iframe_link: this.item_info,
+      displayDragger: 0
+    };
   },
 
   methods: {
     //   Gets triggered when the draggable element is dragged
     onDragStart(event, item_id) {
-         this.$store.dispatch("onDragStart", item_id);
+      this.$store.dispatch("onDragStart", item_id);
     },
 
     // Gets triggered when the save changes button is clicked.
     store_item_info(item_id) {
       let json_data = {};
       json_data["item_id"] = item_id;
-      json_data["info"] = this.iframe_link
+      json_data["info"] = this.iframe_link;
 
       this.$store.dispatch("on_info_change", json_data);
-    }   
+    }
   }
 };
-
 </script>
 
 <style scoped>
-    p{
-        border-left: 2px solid black;
-    }
+p {
+  border-left: 2px solid black;
+}
 </style>
 

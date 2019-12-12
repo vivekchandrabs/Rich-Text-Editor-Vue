@@ -1,9 +1,11 @@
 <template>
-    <div>
+    <div style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+
+      <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
         <div  
-            v-on:keyup="store_item_info($event, item_id)"
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)" 
+            v-on:keyup="store_item_info($event, item_id)" 
             class="list-item">
             <ol
                 contenteditable=true
@@ -15,20 +17,24 @@
 </template>
 
 <script>
-import store from "../../stores"
+import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "OrderedList",
-  props:["item_id", "item_info"],
+  props: ["item_id", "item_info"],
 
   data() {
     return {
-      element_array: this.item_info
+      element_array: this.item_info,
+      displayDragger: 0
     };
   },
-
+  components: {
+    DraggerButton
+  },
   methods: {
-    
     store_item_info(event, item_id) {
       let json_data = {};
       json_data["item_id"] = item_id;
@@ -39,7 +45,7 @@ export default {
 
     onDragStart(event, item_id) {
       this.$store.dispatch("onDragStart", item_id);
-    },
+    }
   }
 };
 </script>

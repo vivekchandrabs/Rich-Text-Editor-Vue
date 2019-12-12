@@ -1,28 +1,42 @@
 <template>
-    <div>
+    <div  style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+      
+      <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
+      <div>
         <h1 contenteditable=true
             data-placeholder="this is the heading"
             v-on:keyup="store_item_info($event, item_id)"
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)" 
-            class="list-item" 
-            >
+            class="list-item">
             {{item_info}}
         </h1>
+      </div>
+
     </div>
 </template>
 
 <script>
-import store from "../../stores"
+import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "Heading_1",
-  props:["item_id", "item_info"],
-
-  methods: {
+  props: ["item_id", "item_info"],
+  data(){
+    return {
+      displayDragger:0
+    }
+  },
+  components: {
+    DraggerButton
+  },
+  methods: {    
+    
     // Gets triggered when the h1 tag is dragged
     onDragStart(event, item_id) {
-         this.$store.dispatch("onDragStart", item_id);
+      this.$store.dispatch("onDragStart", item_id);
     },
 
     // Gets trigged when the h1 tag content is changes
@@ -30,9 +44,8 @@ export default {
       let json_data = {};
       json_data["item_id"] = item_id;
       json_data["info"] = event.target.innerHTML;
-  
-      this.$store.dispatch("on_info_change", json_data);
 
+      this.$store.dispatch("on_info_change", json_data);
     }
   }
 };

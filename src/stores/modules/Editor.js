@@ -29,14 +29,14 @@ const state = {
     // Items: [],
     initial_index: -1,
     final_index: -1,
-    hover: false
+    hover: false,
 }
 
 const getters = {
     Items: state => state.Items,
     initial_index: state => state.initial_index,
     final_index: state => state.final_index,
-    hover: state => state.hover
+    hover: state => state.hover,
 
 }
 
@@ -68,7 +68,6 @@ const actions = {
       } else {
         state.Items.splice(element_index, 1);
       }
-      console.log(state.Items)
     },
 
     allowDrop: (store, ev, item_id) => {
@@ -152,7 +151,7 @@ const mutations = {
     commit_Items : (state, new_items) => (state.Items = new_items),
     commit_initial_index: (state, new_initial_index) => (state.initial_index = new_initial_index),
     commit_final_index: (state, new_final_index) => (state.final_index = new_final_index),
-    commit_hover: (state, hover) => (state.hover = hover)
+    commit_hover: (state, hover) => (state.hover = hover),
 }
 
 export default {

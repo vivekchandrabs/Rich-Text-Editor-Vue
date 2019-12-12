@@ -11,7 +11,8 @@
                   <!-- Div todo drop the HTML elements -->
                   <div 
                   :class="hover ? 'slot-active ' : 'slot'" v-on:drop="on_drop($event, item.id, 0)" 
-                        v-on:dragover="allowDrop($event)">               
+                        v-on:dragover="allowDrop($event, item.id)" :ref="'place-'+item.id"
+                        v-on:dragleave="handleDragLeave($event, item.id)">               
                   </div>
 
                   <!-- Text Area Element -->
@@ -100,10 +101,19 @@ export default {
 
   methods: {
 
+    handleDragLeave(event, item_id){
+      let myref = `place-${item_id}`
+      let elem = this.$refs[myref][0];
+      elem.style.backgroundColor = "#fff"
+    },   
     // Gets triggered when the Editor component is in the allow drop area.
-    allowDrop(event) {
-      this.$store.commit("commit_hover", true)
-      this.$store.dispatch("allowDrop",event)
+    allowDrop(event, item_id) {
+      this.$store.commit("commit_hover", true);
+      this.$store.dispatch("allowDrop", event);
+       let myref = `place-${item_id}`
+      let elem = this.$refs[myref][0];
+      elem.style.backgroundColor = "#3498db"
+      
     },
 
     // Gets triggered when the Editor Element in droped in the drop area.
@@ -117,6 +127,10 @@ export default {
       )
 
       this.$store.commit("commit_hover", false)
+       let myref = `place-${item_id}`
+      let elem = this.$refs[myref][0];
+      console.log(elem);
+      elem.style.backgroundColor = "#fff"
 
     },
   },
@@ -134,8 +148,6 @@ export default {
 <style scoped>
 .editor_body {
   cursor: auto;
-  border-color: rgb(190, 112, 16);
-  border-style: solid;
   height: 100%;
 }
 

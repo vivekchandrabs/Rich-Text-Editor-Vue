@@ -1,10 +1,11 @@
 <template>
-    <div>
+    <div style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+        
+         <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
         <!-- Displays the bookmark_link -->
-        <div    
-            v-if="item_info"  
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)">
+        <div v-if="item_info" >
             {{bookmark_link}}
         </div>
         
@@ -14,9 +15,7 @@
             <button type="button" 
                     class="btn btn-primary list-item"
                     data-toggle="modal"
-                    data-target="#bookmark"
-                    draggable="true"
-                    v-on:dragstart="onDragStart($event, item_id)">
+                    data-target="#bookmark">
                     BookMark
             </button>
 
@@ -53,45 +52,50 @@
 </template>
 
 <script>
-import store from "../../stores"
-import axios from "axios"
+import store from "../../stores";
+import axios from "axios";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "BookMark",
-  props:["item_id", "item_info"],
+  props: ["item_id", "item_info"],
 
-  data(){
-      return {
-          bookmark_link:this.bookmark_link
-      }
+  components: {
+    DraggerButton
   },
-  
+  data() {
+    return {
+      bookmark_link: this.bookmark_link,
+      displayDragger:0
+    };
+  },
+
   methods: {
+      
     // Gets triggered when the Editor Element is Dragged
     onDragStart(event, item_id) {
-         this.$store.dispatch("onDragStart", item_id);
+      this.$store.dispatch("onDragStart", item_id);
     },
 
     // Gets triggered when the save changes button is clicked
     store_item_info(item_id) {
       let json_data = {};
       json_data["item_id"] = item_id;
-      json_data["info"] = this.bookmark_link
+      json_data["info"] = this.bookmark_link;
 
       this.$store.dispatch("on_info_change", json_data);
-    }   
+    }
   },
 
-  created(){
-      if (this.item_info){
-          axios.get(this.item_info)
-          .then(res => console.log(res))
-      }
+  created() {
+    if (this.item_info) {
+      axios.get(this.item_info).then(res => console.log(res));
+    }
   }
 };
 </script>
 
 <style scoped>
-    
 </style>
 

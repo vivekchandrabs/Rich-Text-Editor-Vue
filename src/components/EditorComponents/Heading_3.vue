@@ -1,10 +1,12 @@
 <template>
-    <div>
+    <div style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+
+        <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
         <h3 contenteditable=true
             data-placeholder="this is the heading"
             v-on:keyup="store_item_info($event, item_id)"
-            draggable="true"
-            v-on:dragstart="onDragStart($event, item_id)" 
             class="list-item" 
             >
             {{item_info}}
@@ -13,16 +15,26 @@
 </template>
 
 <script>
-import store from "../../stores"
+import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
 
 export default {
   name: "Heading_3",
-  props:["item_id", "item_info"],
+  props: ["item_id", "item_info"],
+  data() {
+    return {
+      displayDragger: 0
+    };
+  },
+  components: {
+    DraggerButton
+  },
 
   methods: {
     // Gets triggered when the h3 tag is dragged
     onDragStart(event, item_id) {
-         this.$store.dispatch("onDragStart", item_id);
+      this.$store.dispatch("onDragStart", item_id);
     },
 
     // Gets triggered when the h3 tag content is changed

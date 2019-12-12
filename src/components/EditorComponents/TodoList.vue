@@ -1,9 +1,10 @@
 <template>
-    <div>
-        <div class="custom-control custom-switch list-item"
-        
-          draggable="true"
-          v-on:dragstart="onDragStart($event, item_id)">
+    <div style="display:flex; justify-content:flex-start; align-items:center;" 
+          @mouseover="displayDragger=1" @mouseout="displayDragger=0">
+
+         <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
+
+        <div class="custom-control custom-switch list-item">
 
           <input type="checkbox" 
           class="custom-control-input custom-switch" 
@@ -25,16 +26,22 @@
 
 <script>
 import store from "../../stores";
+
+import DraggerButton from "./DraggerButton";
+
 export default {
   name: "TodoList",
   props: ["item_id", "item_info", "checked"],
-  data(){
-      return {
-          component_checked:this.checked
-      }
+  data() {
+    return {
+      component_checked: this.checked,
+      displayDragger: 0
+    };
+  },
+  components: {
+    DraggerButton
   },
   methods: {
-
     onDragStart(event, item_id) {
       this.$store.dispatch("onDragStart", item_id);
     },
@@ -50,13 +57,13 @@ export default {
     },
 
     change_status(item_id) {
-      this.component_checked = !this.component_checked
-        
+      this.component_checked = !this.component_checked;
+
       let json_data = {};
       json_data["checked"] = !this.component_checked;
-      json_data["item_id"] = item_id;     
+      json_data["item_id"] = item_id;
 
-      this.$store.dispatch("change_state", json_data)
+      this.$store.dispatch("change_state", json_data);
     }
   }
 };
