@@ -1,4 +1,5 @@
 import axios from "axios"
+import { reject } from "q"
 // var SITE_PREFIX = "http://127.0.0.1:8000/api"
 var SITE_PREFIX = "https://editor-backend.herokuapp.com/api"
 
@@ -17,7 +18,7 @@ const state = {
         { id: 4, info: "Heading 3" , element_id: 4},
         { id: 1, info: "Text Area" , element_id: 1},
         { id: 5, info: "Quote" , element_id: 5},
-        { id: 6, element_id: 6},
+        { id: 6, info: "", element_id: 6},
         { id: 7, info: "", element_id: 7, },
         { id: 8, info: "", element_id: 8, },
         { id: 9, info: {"checked":true, "label": "this is the label"}, element_id: 9},
@@ -143,8 +144,45 @@ const actions = {
 
       axios.patch(SITE_PREFIX+`/editor_info/1/`, editor_info)
         .then(res => console.log(res.data))
+    },
+
+    deleteComponent: (store, item_id) => {
+      let element_to_delete = state.Items.filter(Items => Items.id === item_id)[0];
+      let element_index = state.Items.indexOf(element_to_delete);
       
-    }
+      state.Items.splice(element_index, 1)
+    },
+
+    changeComponent: (store, json_data) => new Promise((resolve, reject) => {
+      
+        if(json_data.element_id == 9){
+          json_data.info = {"checked":false, "label": "this is the label"}
+        }
+        else if (json_data.element_id == 13){
+          json_data.info = TABLE_MATRIX
+        }
+        
+        let new_element = {}
+        new_element["info"] = json_data.info
+        new_element["element_id"] = json_data.element_id
+
+        let max_id = 0
+
+        for (let i of state.Items){
+          if (i.id > max_id){
+            max_id = i.id
+          }
+        }
+
+        new_element["id"] = max_id + 1
+
+        let current_element = state.Items.filter(Items => Items.id === json_data.item_id)[0];
+        let new_element_index = state.Items.indexOf(current_element) + 1
+                
+        state.Items.splice(new_element_index, 0, new_element)
+
+        resolve(new_element)
+    })
 }
 
 const mutations = {

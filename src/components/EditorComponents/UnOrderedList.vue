@@ -2,6 +2,7 @@
     <div style="display:flex; justify-content:flex-start; align-items:center;" 
           @mouseover="displayDragger=1" @mouseout="displayDragger=0">
         
+        <ContextMenu v-bind:item_id="item_id"  v-bind:displayDragger="displayDragger"/>
         <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
 
         <div  
@@ -20,6 +21,7 @@
 import store from "../../stores";
 
 import DraggerButton from "./DraggerButton";
+import ContextMenu from "./ContextMenu";
 
 export default {
   name: "UnOrderedList",
@@ -32,7 +34,8 @@ export default {
     };
   },
   components: {
-    DraggerButton
+    DraggerButton,
+    ContextMenu
   },
 
   methods: {

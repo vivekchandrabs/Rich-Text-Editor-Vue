@@ -2,6 +2,7 @@
     <div style="display:flex; justify-content:flex-start; align-items:center;" 
           @mouseover="displayDragger=1" @mouseout="displayDragger=0">
 
+        <ContextMenu v-bind:item_id="item_id"  v-bind:displayDragger="displayDragger"/>
         <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
 
         <h2 contenteditable=true
@@ -18,6 +19,7 @@
 import store from "../../stores";
 
 import DraggerButton from "./DraggerButton";
+import ContextMenu from "./ContextMenu";
 
 export default {
   name: "Heading_2",
@@ -28,7 +30,8 @@ export default {
     };
   },
   components: {
-    DraggerButton
+    DraggerButton,
+    ContextMenu
   },
 
   methods: {

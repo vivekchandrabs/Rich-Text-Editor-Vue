@@ -16,12 +16,17 @@
                   </div>
 
                   <!-- Text Area Element -->
-                  <TextArea v-if="item.element_id==1" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <TextArea v-if="item.element_id==1" 
+                            v-bind:item_id="item.id" 
+                            v-bind:item_info="item.info" 
+                            :ref="'element-'+item.id" />
 
                   <!-- Heading 1, 2, 3 -->
-                  <Heading_1 v-if="item.element_id==2" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <Heading_1 v-if="item.element_id==2" v-bind:item_id="item.id" v-bind:item_info="item.info" 
+                             ref="item.id" />
+
                   <Heading_2 v-if="item.element_id==3" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
-                  <Heading_3 v-if="item.element_id==4" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <Heading_3 v-if="item.element_id==4" v-bind:item_id="item.id" v-bind:item_info="item.info" ref="thisisit"/>
 
                   <!-- Quote -->
                   <Quote v-if="item.element_id==5" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
@@ -44,7 +49,7 @@
                   <EmbedImage v-if="item.element_id == 11" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
                   
                   <!-- Store BookMarks -->
-                  <BookMark v-if="item.element_id == 12" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
+                  <BookMark v-if="item.element_id == 12" v-bind:item_id="item.id" v-bind:item_info="item.info" />
                   
                   <!-- Table -->
                   <Table v-if="item.element_id == 13" v-bind:item_id="item.id" v-bind:item_info="item.info"/>
@@ -58,22 +63,22 @@
 <script>
 import Vue from "vue";
 
-import store from "../stores"
+import store from "../stores";
 import { mapActions, mapGetters } from "vuex";
 
-import Heading_1 from "./EditorComponents/Heading_1"
-import Heading_2 from "./EditorComponents/Heading_2"
-import Heading_3 from "./EditorComponents/Heading_3"
-import TextArea from "./EditorComponents/TextArea"
-import Quote from "./EditorComponents/Quote"
-import Divider from "./EditorComponents/Divider"
-import UnOrderedList from "./EditorComponents/UnOrderedList"
-import OrderedList from "./EditorComponents/OrderedList"
-import TodoList from "./EditorComponents/TodoList"
-import EmbedVideo from "./EditorComponents/EmbedVideo"
-import EmbedImage from "./EditorComponents/EmbedImage"
-import BookMark from "./EditorComponents/BookMark"
-import Table from "./EditorComponents/Table"
+import Heading_1 from "./EditorComponents/Heading_1";
+import Heading_2 from "./EditorComponents/Heading_2";
+import Heading_3 from "./EditorComponents/Heading_3";
+import TextArea from "./EditorComponents/TextArea";
+import Quote from "./EditorComponents/Quote";
+import Divider from "./EditorComponents/Divider";
+import UnOrderedList from "./EditorComponents/UnOrderedList";
+import OrderedList from "./EditorComponents/OrderedList";
+import TodoList from "./EditorComponents/TodoList";
+import EmbedVideo from "./EditorComponents/EmbedVideo";
+import EmbedImage from "./EditorComponents/EmbedImage";
+import BookMark from "./EditorComponents/BookMark";
+import Table from "./EditorComponents/Table";
 
 export default {
   name: "Editor1",
@@ -101,45 +106,52 @@ export default {
 
   methods: {
 
-    handleDragLeave(event, item_id){
-      let myref = `place-${item_id}`
+    addComponent(return_json_data){
+      let element_refs = `element-${return_json_data.res.id}`
+      console.log(this.$refs.thisisit[0].$el)    
+    },
+    handleDragLeave(event, item_id) {
+      let myref = `place-${item_id}`;
       let elem = this.$refs[myref][0];
-      elem.style.backgroundColor = "#fff"
-    },   
+      elem.style.backgroundColor = "#fff";
+    },
     // Gets triggered when the Editor component is in the allow drop area.
     allowDrop(event, item_id) {
       this.$store.commit("commit_hover", true);
       this.$store.dispatch("allowDrop", event);
-       let myref = `place-${item_id}`
+      let myref = `place-${item_id}`;
       let elem = this.$refs[myref][0];
-      elem.style.backgroundColor = "#3498db"
-      
+      elem.style.backgroundColor = "#3498db";
     },
 
     // Gets triggered when the Editor Element in droped in the drop area.
     on_drop(event, item_id, place_id) {
-      let json_data ={}
-      json_data["item_id"] = item_id
-      json_data["place_id"] = place_id
+      let json_data = {};
+      json_data["item_id"] = item_id;
+      json_data["place_id"] = place_id;
 
-      this.$store.dispatch("on_drop", json_data).then(
-        this.$store.dispatch("reorder")
-      )
+      this.$store
+        .dispatch("on_drop", json_data)
+        .then(this.$store.dispatch("reorder"));
 
-      this.$store.commit("commit_hover", false)
-       let myref = `place-${item_id}`
+      this.$store.commit("commit_hover", false);
+      let myref = `place-${item_id}`;
       let elem = this.$refs[myref][0];
       console.log(elem);
-      elem.style.backgroundColor = "#fff"
-
-    },
+      elem.style.backgroundColor = "#fff";
+    }
+  },
+  mounted(){
+    this.$root.$on('Editor1', (res) => {
+      this.addComponent(res)
+    })
   },
   created() {
     // this.$store.dispatch("getAllItems")
     // .then(res => {
     //   console.log(res.data)
     //   this.$store.commit("commit_Items", res.data.editor_info),
-      this.loading = true
+    this.loading = true;
     // })
   }
 };
@@ -153,11 +165,11 @@ export default {
 
 .list-item {
   margin-right: 10px;
-  margin: 10px; 
+  margin: 10px;
 }
 .list-enter-active,
 .list-leave-active {
-  transition: all 1s;
+  transition: all 0.7s;
 }
 .list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -195,8 +207,7 @@ export default {
 }
 
 div:empty:before {
-  content:attr(data-placeholder);
-  color:gray
+  content: attr(data-placeholder);
+  color: gray;
 }
-
 </style>
