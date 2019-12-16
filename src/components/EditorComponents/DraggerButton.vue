@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height:auto">
         <div class="dragger" 
             @mousedown="startDrag" 
             :draggable="draggable" 
@@ -66,13 +66,13 @@ export default {
 <style scoped>
 .dragger {
   margin-right: 5px;
-  padding: 10px;
+  padding: 5px;
   border-radius: 5px;
 }
 
 .dragger:hover {
   background-color: #eee;
-  cursor: grabbing;
+  cursor: grab;
 }
 
 

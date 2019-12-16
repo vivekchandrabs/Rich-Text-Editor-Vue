@@ -169,4 +169,7 @@ export default {
 </script>
 
 <style scoped>
+div:focus{
+   outline-width: 0;
+}
 </style>

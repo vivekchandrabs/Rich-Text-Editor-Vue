@@ -5,17 +5,16 @@
       <ContextMenu v-bind:item_id="item_id"  v-bind:displayDragger="displayDragger"/>
       <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
 
-      <div contenteditable=true
-         v-on:keydown.enter="addNewTextArea($event)"
-          v-on:keyup="store_item_info($event, item_id)">
-        <h1 
-            data-placeholder="this is the heading"
-           
-            class="list-item">
-            {{item_info}}
+        <h1 :ref="'focus_ref'+item_id"
+            contenteditable=true
+            data-text="Heading 1"
+            class="heading-1"
+            v-on:keydown.enter="addNewTextArea($event)"
+            v-on:keyup="store_item_info($event, item_id)"
+            v-html="local_item_info">
         </h1>
-      </div>
 
+      <DropDownContextMenu  v-bind:display_dropdown="display_dropdown" v-bind:item_id="item_id"/>
     </div>
 </template>
 
@@ -24,36 +23,35 @@ import store from "../../stores";
 
 import DraggerButton from "./DraggerButton";
 import ContextMenu from "./ContextMenu";
+import DropDownContextMenu from "./DropDownContextMenu";
 
 export default {
   name: "Heading_1",
   props: ["item_id", "item_info"],
-  data(){
+  data() {
     return {
-      displayDragger:0
-    }
+      displayDragger: 0,
+      display_dropdown: 0,
+      local_item_info:this.item_info
+    };
   },
   components: {
     DraggerButton,
-    ContextMenu
+    ContextMenu,
+    DropDownContextMenu
   },
-  methods: {    
-    addNewTextArea(event){
+  methods: {
+    addNewTextArea(event) {
       event.preventDefault();
 
-      let json_data = {}
-      json_data["item_id"] = this.item_id
-      json_data["element_id"] = 1
-      json_data["info"] = "Add Text Here"
+      let json_data = {};
+      json_data["item_id"] = this.item_id;
+      json_data["element_id"] = 1;
+      json_data["info"] = null;
 
-      this.$store.dispatch("changeComponent", json_data)
-      .then(res => {
-        let return_json_data = {}
-        return_json_data["res"] = res
-        return_json_data["event"] = event
-        this.$root.$emit('Editor1', return_json_data)
-      })
+      this.$store.dispatch("addNewComponent", json_data);
     },
+
     // Gets triggered when the h1 tag is dragged
     onDragStart(event, item_id) {
       this.$store.dispatch("onDragStart", item_id);
@@ -61,19 +59,35 @@ export default {
 
     // Gets trigged when the h1 tag content is changes
     store_item_info(event, item_id) {
-      let json_data = {};
-      json_data["item_id"] = item_id;
-      json_data["info"] = event.target.innerText;
+      if (event.target.innerText == "/") {
+        this.display_dropdown = 1;
+      } else {
+        let json_data = {};
+        json_data["item_id"] = item_id;
+        json_data["info"] = event.target.innerHTML;
+        this.display_dropdown = 0;
 
-      this.$store.dispatch("on_info_change", json_data);
+        this.$store.dispatch("on_info_change", json_data);
+      }
+    },
+    closeDropMenu() {
+      this.display_dropdown = 0;
     }
+  },
+  mounted() {
+    let focus_element = `focus_ref${this.item_id}`;
+    this.$refs[focus_element].focus();
+  },
+  created() {
+    window.addEventListener("click", this.closeDropMenu);
   }
 };
 </script>
 
 <style scoped>
-h1 {
-     white-space: nowrap;
+
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
 }
 
 </style>

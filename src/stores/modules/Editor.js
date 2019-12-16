@@ -3,31 +3,38 @@ import { reject } from "q"
 // var SITE_PREFIX = "http://127.0.0.1:8000/api"
 var SITE_PREFIX = "https://editor-backend.herokuapp.com/api"
 
-var TABLE_MATRIX =[
-    ["c1", "c2", "c3", "c4", "c5"],
-    ["r1", "1", "First", "Last", "Handle"],
-    ["r2", "2", "Mark", "Otto", "@mdo"],
-    ["r3", "3", "Jacob", "Thornton", "@fat"],
-    ["r4", "4", "Larry", "The Bird", "@twitter"]
-  ]
+class TableMatrix{
+  constructor(Table_Martix){
+    this.TABLE_MATRIX =[
+      ["c1", "c2", "c3", "c4", "c5"],
+      ["r1", "1", "First", "Last", "Handle"],
+      ["r2", "2", "Mark", "Otto", "@mdo"],
+      ["r3", "3", "Jacob", "Thornton", "@fat"],
+      ["r4", "4", "Larry", "The Bird", "@twitter"]
+    ]
+  }
+  return_table_matrix(){
+    return this.TABLE_MATRIX
+  }
+}
 
 const state = {
-    Items: [
-        { id: 2, info: "Heading 1" , element_id: 2},
-        { id: 3, info: "Heading 2" , element_id: 3},
-        { id: 4, info: "Heading 3" , element_id: 4},
-        { id: 1, info: "Text Area" , element_id: 1},
-        { id: 5, info: "Quote" , element_id: 5},
-        { id: 6, info: "", element_id: 6},
-        { id: 7, info: "", element_id: 7, },
-        { id: 8, info: "", element_id: 8, },
-        { id: 9, info: {"checked":true, "label": "this is the label"}, element_id: 9},
-        { id: 10, info: null , element_id: 10},
-        { id: 11, info: null , element_id: 11},
-        { id: 12, info: null , element_id: 12},
-        { id: 13, info: TABLE_MATRIX,  element_id: 13},
-    ],
-    // Items: [],
+    // Items: [
+    //     { id: 2, info: "Heading 1" , element_id: 2},
+    //     { id: 3, info: "Heading 2" , element_id: 3},
+    //     { id: 4, info: "Heading 3" , element_id: 4},
+    //     { id: 1, info: 'Enter the Text' , element_id: 1},
+    //     { id: 5, info: "Quote" , element_id: 5},
+    //     { id: 6, info: "", element_id: 6},
+    //     { id: 7, info: "", element_id: 7, },
+    //     { id: 8, info: "", element_id: 8, },
+    //     { id: 9, info: {"checked":true, "label": "this is the label"}, element_id: 9},
+    //     { id: 10, info: null , element_id: 10},
+    //     { id: 11, info: null , element_id: 11},
+    //     { id: 12, info: null , element_id: 12},
+    //     { id: 13, info: new TableMatrix().return_table_matrix(),  element_id: 13},
+    // ],
+    Items: null,
     initial_index: -1,
     final_index: -1,
     hover: false,
@@ -141,7 +148,7 @@ const actions = {
       let editor_info = {}
 
       editor_info["editor_info"] = state.Items
-
+      
       axios.patch(SITE_PREFIX+`/editor_info/1/`, editor_info)
         .then(res => console.log(res.data))
     },
@@ -151,15 +158,21 @@ const actions = {
       let element_index = state.Items.indexOf(element_to_delete);
       
       state.Items.splice(element_index, 1)
+
+      let editor_info = {}
+      editor_info["editor_info"] = state.Items
+      
+      axios.patch(SITE_PREFIX+`/editor_info/1/`, editor_info)
+        .then(res => console.log(res.data))
     },
 
-    changeComponent: (store, json_data) => new Promise((resolve, reject) => {
+    addNewComponent: (store, json_data) => new Promise((resolve, reject) => {
       
         if(json_data.element_id == 9){
           json_data.info = {"checked":false, "label": "this is the label"}
         }
         else if (json_data.element_id == 13){
-          json_data.info = TABLE_MATRIX
+          json_data.info = new TableMatrix().return_table_matrix()
         }
         
         let new_element = {}
@@ -182,7 +195,25 @@ const actions = {
         state.Items.splice(new_element_index, 0, new_element)
 
         resolve(new_element)
-    })
+    }),
+
+    changeComponent: (store, json_data) => new Promise((resolve, reject) => {
+      
+      if(json_data.element_id == 9){
+        json_data.info = {"checked":false, "label": "ToDo List"}
+      }
+      else if (json_data.element_id == 13){
+        json_data.info = new TableMatrix().return_table_matrix()
+      }
+
+      let current_element = state.Items.filter(Items => Items.id === json_data.item_id)[0];
+      let new_element_index = state.Items.indexOf(current_element)
+
+      current_element.element_id = json_data.element_id
+      current_element.info = json_data.info
+
+      resolve(current_element)
+  })
 }
 
 const mutations = {

@@ -5,23 +5,21 @@
          <ContextMenu v-bind:item_id="item_id"  v-bind:displayDragger="displayDragger"/>
          <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
 
-        <div class="custom-control custom-switch list-item">
-
+       
           <input type="checkbox" 
-          class="custom-control-input custom-switch" 
-          v-on:change="change_status(item_id)" id="customSwitch1" :checked="component_checked">
+                v-on:change="change_status(item_id)" 
+                :checked="component_checked">
 
-          <label class="custom-control-label" 
-          contenteditable=true
-          v-on:keyup="store_item_info($event, item_id)"
-          for="customSwitch1"
-          style="font-weight:bold">
-
-          {{item_info.label}}
-
-          </label>
+          <p
+            contenteditable=true
+            v-on:keyup="store_item_info($event, item_id)"
+            v-on:keydown.enter="addNewTextArea($event)"         
+            :ref="'focus_ref'+item_id"
+            data-text="Todo List"
+            class="todo-list-label"
+            v-html="local_item_info">
+          </p>
           
-        </div>
     </div>
 </template>
 
@@ -36,8 +34,9 @@ export default {
   props: ["item_id", "item_info", "checked"],
   data() {
     return {
-      component_checked: this.checked,
-      displayDragger: 0
+      component_checked: this.item_info.checked,
+      displayDragger: 0,
+      local_item_info: this.item_info.label
     };
   },
   components: {
@@ -45,6 +44,20 @@ export default {
     ContextMenu
   },
   methods: {
+    addNewTextArea(event) {
+      event.preventDefault();
+
+      let json_data = {};
+      json_data["item_id"] = this.item_id;
+      json_data["info"] = "Add Text Here";
+      if (event.target.innerText == "") {
+        json_data["element_id"] = 1;
+        this.$store.dispatch("changeComponent", json_data);
+      } else {
+        json_data["element_id"] = 9;
+        this.$store.dispatch("addNewComponent", json_data);
+      }
+    },
     onDragStart(event, item_id) {
       this.$store.dispatch("onDragStart", item_id);
     },
@@ -68,9 +81,22 @@ export default {
 
       this.$store.dispatch("change_state", json_data);
     }
+  },
+  mounted() {
+    let focus_element = `focus_ref${this.item_id}`;
+    this.$refs[focus_element].focus();
   }
 };
 </script>
 
-<style>
+<style scoped>
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
+}
+
+p {
+  margin-bottom: 0;
+  margin-left:10px;
+  margin-top:3px;
+}
 </style>

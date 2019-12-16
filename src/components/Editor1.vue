@@ -1,5 +1,6 @@
 <template>
     <div class="editor_body container"> 
+      <br><br>
             <transition-group name="list" 
                               tag="p"
                               v-if="loading">
@@ -105,10 +106,9 @@ export default {
   },
 
   methods: {
-
-    addComponent(return_json_data){
-      let element_refs = `element-${return_json_data.res.id}`
-      console.log(this.$refs.thisisit[0].$el)    
+    addComponent(return_json_data) {
+      let element_refs = `element-${return_json_data.res.id}`;
+      console.log(this.$refs.thisisit[0].$el);
     },
     handleDragLeave(event, item_id) {
       let myref = `place-${item_id}`;
@@ -141,23 +141,24 @@ export default {
       elem.style.backgroundColor = "#fff";
     }
   },
-  mounted(){
-    this.$root.$on('Editor1', (res) => {
-      this.addComponent(res)
-    })
-  },
   created() {
-    // this.$store.dispatch("getAllItems")
-    // .then(res => {
-    //   console.log(res.data)
-    //   this.$store.commit("commit_Items", res.data.editor_info),
-    this.loading = true;
-    // })
+    this.$store.dispatch("getAllItems").then(res => {
+      console.log(res.data.editor_info.length);
+      if (res.data.editor_info == 0) {
+        res.data.editor_info.push({
+          id: 1,
+          info: "Enter the Text",
+          element_id: 1
+        });
+      }
+      this.$store.commit("commit_Items", res.data.editor_info),
+        (this.loading = true);
+    });
   }
 };
 </script>
 
-<style scoped>
+<style>
 .editor_body {
   cursor: auto;
   height: 100%;
@@ -165,7 +166,6 @@ export default {
 
 .list-item {
   margin-right: 10px;
-  margin: 10px;
 }
 .list-enter-active,
 .list-leave-active {
@@ -177,13 +177,13 @@ export default {
 }
 
 .slot {
-  min-height: 10px;
+  min-height: 5px;
   min-width: 100%;
 }
 
 .slot-active {
-  min-height: 10px;
-  background: #eee;
+  min-height: 5px;
+  background: #fff;
   min-width: 100%;
 }
 
@@ -206,8 +206,60 @@ export default {
   border-radius: 40%;
 }
 
-div:empty:before {
-  content: attr(data-placeholder);
-  color: gray;
+.text-area {
+  padding: 5px 10px 5px 10px;
+  width: 100%;
+  margin: 0;
+}
+
+.text-area:focus {
+  outline-width: 0;
+}
+
+.heading-1 {
+  outline-width: 0;
+  white-space: nowrap;
+  padding: 10px;
+  width: 100%;
+}
+
+.heading-2 {
+  padding: 10px;
+  outline-width: 0;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.heading-3 {
+  padding: 10px;
+  outline-width: 0;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.quote {
+  border-left: 2px solid black;
+  padding: 10px;
+  outline-width: 0;
+  width: 100%;
+}
+
+.todo-list-label {
+  outline-width: 0;
+  width: 100%;
+}
+
+.ordered-list {
+  padding: 5px;
+  width: 100%;
+  margin-left: 2%;
+  outline-width: 0;
+}
+
+.unordered-list {
+  padding: 5px;
+  width: 100%;
+  margin-left: 2%;
+  outline-width: 0;
 }
 </style>

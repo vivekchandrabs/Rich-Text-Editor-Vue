@@ -5,15 +5,13 @@
         <ContextMenu v-bind:item_id="item_id"  v-bind:displayDragger="displayDragger"/>
         <DraggerButton v-bind:item_id="item_id" v-bind:displayDragger="displayDragger"/>
 
-        <div  
-            v-on:keyup="store_item_info($event, item_id)"
-            class="list-item">
-            <ul
+            <ul v-on:keyup="store_item_info($event, item_id)"
                 contenteditable=true
-                data-placeholder="this is the heading">
-                <li>{{element_array}}</li>
+                :ref="'focus_ref'+item_id"
+                class="unordered-list"
+                v-html="local_item_info">
             </ul>
-        </div>
+        
     </div>
 </template>
 
@@ -29,7 +27,7 @@ export default {
 
   data() {
     return {
-      element_array: this.item_info,
+      local_item_info: this.item_info,
       displayDragger: 0
     };
   },
@@ -50,9 +48,13 @@ export default {
     onDragStart(event, item_id) {
       this.$store.dispatch("onDragStart", item_id);
     }
+  },
+  mounted() {
+    let focus_element = `focus_ref${this.item_id}`;
+    this.$refs[focus_element].focus();
   }
 };
 </script>
 
-<style>
+<style scoped>
 </style>
